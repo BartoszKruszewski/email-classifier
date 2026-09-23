@@ -1,0 +1,33 @@
+# VCS
+.git
+.gitignore
+
+# Local virtual environment & uv cache
+.venv/
+.uv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Tests and documentation
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local configuration & secrets
+.env
+.env.example
+
+# IDEs & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Docker Compose / persistent volumes
+docker-compose.yml
+ollama_data/

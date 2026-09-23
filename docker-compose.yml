@@ -1,0 +1,47 @@
+services:
+  ollama:
+    image: alpine/ollama:latest
+    container_name: ai_ollama
+    ports:
+      - "${OLLAMA_PORT}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+  ollama-init:
+    image: curlimages/curl:latest
+    container_name: ai_ollama_init
+    depends_on:
+      - ollama
+    entrypoint: >
+      sh -c "echo 'Waiting for Ollama to start...' &&
+             while ! curl -s http://ollama:11434/api/tags; do sleep 2; done &&
+             echo 'Downloading model ${MODEL_NAME}...' &&
+             curl -s http://ollama:11434/api/pull -d '{\"name\": \"${MODEL_NAME}\"}' &&
+             echo 'Model downloaded.'"
+    restart: "no"
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ai_mailhog
+    ports:
+      - "${MAILHOG_PORT}:1025"
+      - "${MAILHOG_WEB_PORT}:8025"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai_api_service
+    ports:
+      - "${API_PORT}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - ollama
+      - mailhog
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
