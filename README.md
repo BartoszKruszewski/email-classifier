@@ -21,7 +21,7 @@ As **dev** you can run tests using:
 ## Architecutre decisions
 
 - I used **langchain** as an agent library
-- I choose the smallest of my favorite Ollama models that yielded sensible results—namely, **qwen2.5:1.5b** *(the 0.5b version didn't work very well)*.
+- I choose the smallest of my favorite Ollama models that yielded sensible results namely, **qwen2.5:1.5b** *(the 0.5b version didn't work very well)*.
 - separate layers for the API, agent, tool, email service, and domain
 - defining **domain-independent departments**, along with a registry of information about them *(to allow for future extensibility)*
 - enriching the system prompt with **department-specific information** to better distinguish between them *(there were issues distinguishing between HR and Kadry)*
@@ -65,3 +65,5 @@ You can use some of example data as a message:
 Or use `e2e.py` script
 
 Inspect the received email at http://localhost:8025 to verify.
+
+The tests I conducted show that the classification result can also **vary depending on the device** used to run it: a machine with an **RTX 2060** yields slightly different results than a **MacBook with an M1 processor**.
