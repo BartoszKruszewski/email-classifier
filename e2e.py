@@ -35,14 +35,26 @@ all_passed = True
 
 with httpx.Client(timeout=30.0) as client:
     for expected, message in TEST_CASES:
-        response = client.post(URL, json={"email": EMAIL, "message": message})
-        response.raise_for_status()
-        res = response.json()
-        actual = res.get("department")
+        try:
+            response = client.post(URL, json={"email": EMAIL, "message": message})
 
-        is_ok = actual == expected
-        all_passed = all_passed and is_ok
-        status = f"{GREEN}[OK]{RESET}" if is_ok else f"{RED}[FAILED (got '{actual}')]{RESET}"
+            if response.status_code != 200:
+                all_passed = False
+                status = f"{RED}[FAILED (HTTP {response.status_code})]{RESET}"
+            else:
+                res = response.json()
+                actual = res.get("department")
+                is_ok = actual == expected
+                all_passed = all_passed and is_ok
+                status = f"{GREEN}[OK]{RESET}" if is_ok else f"{RED}[FAILED (got '{actual}')]{RESET}"
+
+        except httpx.TimeoutException:
+            all_passed = False
+            status = f"{RED}[FAILED (TIMEOUT)]{RESET}"
+        except httpx.RequestError as exc:
+            all_passed = False
+            status = f"{RED}[FAILED (CONNECTION ERROR: {exc.__class__.__name__})]{RESET}"
+
         print(f"{status} Expected: {expected:<9} | Message: {message}")
 
 sys.exit(0 if all_passed else 1)

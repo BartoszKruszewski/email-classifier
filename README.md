@@ -8,6 +8,10 @@
    *(Ready once `ollama-init` exits with code 0)*
 4. `docker compose logs -f`: see all services logs
 
+As **dev** you can run tests using:
+- `uv run pytest`
+- `uv run e2e.py`
+
 ## Services
 
 - **API Docs (Swagger)**: http://localhost:8000/api/v1/docs
