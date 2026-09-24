@@ -10,15 +10,15 @@ class DepartmentInfo:
     exclusions: list[str]
 
     def to_prompt_text(self, dept_name: str) -> str:
-        kw = ", ".join(self.keywords)
-        ex = "\n    - ".join(self.exclusions)
+        keywords_str = ", ".join(self.keywords)
+        exclusions_str = "\n    - ".join(self.exclusions)
         return (
             f"[{dept_name}]\n"
             f"  Email: {self.email}\n"
             f"  Responsibilities: {self.description}\n"
-            f"  Keywords: {kw}\n"
+            f"  Keywords: {keywords_str}\n"
             f"  DO NOT ROUTE HERE (Exclusions):\n"
-            f"    - {ex}"
+            f"    - {exclusions_str}"
         )
 
 

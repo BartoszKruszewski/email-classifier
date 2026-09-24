@@ -1,45 +1,43 @@
-import logging
-
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain.agents import create_agent
+from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
-from pydantic import BaseModel, Field
 
 from src.app.config import settings
 from src.app.departments import Department
 from src.app.prompts import DEPARTMENT_CHOICE_PROMPT
+from src.app.tools import send_routed_email
 
-logger = logging.getLogger(__name__)
 
-
-class DepartmentClassificationError(RuntimeError):
+class ModelRuntimeError(RuntimeError):
     """Raised when the message cannot be classified reliably."""
 
 
-class DepartmentClassification(BaseModel):
-    department: Department = Field(
-        description="Department to which the email should be routed."
-    )
+agent = create_agent(
+    model=ChatOllama(base_url=settings.ollama_host, model=settings.model_name, temperature=0.0),
+    tools=[send_routed_email],
+    system_prompt=DEPARTMENT_CHOICE_PROMPT,
+    name="email_router",
+)
 
 
-llm = ChatOllama(
-    base_url=settings.ollama_host,
-    model=settings.model_name,
-    temperature=0.0,
-).with_structured_output(DepartmentClassification)
-
-
-def choose_department(email_content: str) -> Department:
+def route_message_agent(sender_email: str, email_content: str) -> Department:
     try:
-        messages = [
-            SystemMessage(content=DEPARTMENT_CHOICE_PROMPT),
-            HumanMessage(content=email_content)
-        ]
-
-        result = llm.invoke(messages)
-        if isinstance(result, DepartmentClassification):
-            return result.department
-        raise DepartmentClassificationError("The classifier returned an invalid result")
-
+        result = agent.invoke({
+            "messages": [
+                HumanMessage(content=(
+                    f"Sender email: {sender_email}\n"
+                    f"Incoming message:\n{email_content}"
+                ))
+            ]
+        })
     except Exception as e:
-        logger.exception("Error occurred while choosing department")
-        raise DepartmentClassificationError("The message could not be classified") from e
+        raise ModelRuntimeError("The message could not be classified") from e
+
+    for message in reversed(result["messages"]):
+        if message.type == "tool" and message.name == send_routed_email.name:
+            try:
+                return Department(message.content)
+            except ValueError as e:
+                raise ModelRuntimeError("The email tool returned an invalid department") from e
+
+    raise ModelRuntimeError("The agent did not call the email tool")

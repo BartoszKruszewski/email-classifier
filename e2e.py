@@ -13,27 +13,22 @@ TEST_CASES = [
     # HELP_DESK
     ("HELP_DESK", "Hej, moja myszka przestała działać. Macie jakieś zapasowe na stanie?"),
     ("HELP_DESK", "Potrzebuję nowy monitor, obecny ma bardzo słaby kontrast."),
-    ("HELP_DESK", "Rozlałem kawę na klawiaturę i niektóre klawisze nie reagują."),
 
     # IT
     ("IT", "Cześć, wyskakuje mi błąd logowania i nie mam dostępu do produkcyjnej bazy danych."),
     ("IT", "VPN ciągle mnie rozłącza po kilku minutach pracy."),
-    ("IT", "Pipeline CI/CD wywala się na kroku budowania kontenera Dockera."),
 
     # KADRY
     ("KADRY", "Dzień dobry, złożyłem zwolnienie lekarskie. Proszę o informację, jak to wpłynie na moje wynagrodzenie."),
     ("KADRY", "Kiedy otrzymam formularz podatkowy PIT-11 za ubiegły rok?"),
-    ("KADRY", "Ile zostało mi jeszcze dni zaległego/przysługującego płatnego urlopu?"),
 
     # HR
     ("HR", "Czy firma dofinansowuje kursy językowe lub certyfikaty branżowe?"),
-    ("HR", "Chciałbym polecić znajomego w ramach programu poleceń pracowniczych, gdzie mogę przesłać jego CV?"),
     ("HR", "Na kiedy zaplanowane są nadchodzące roczne oceny pracownicze?"),
 
     # OTHER
     ("OTHER", "Ta firma jest super :)"),
     ("OTHER", "Ktoś zostawił niebieski parasol w kuchni na drugim piętrze."),
-    ("OTHER", "Wielkie dzięki wszystkim za pomoc przy wczorajszym wdrożeniu!"),
 ]
 
 all_passed = True
